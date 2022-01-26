@@ -19,12 +19,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.transaction.Transactional;
 
 @RunWith(SpringRunner.class)
-//@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Log4j2
 //@TestPropertySource("/application-test.properties")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ActiveProfiles("test")
+//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ActiveProfiles("test2")
 @Import(UserDaoDataBase.class)
 @Transactional
 @Rollback(value = false)
