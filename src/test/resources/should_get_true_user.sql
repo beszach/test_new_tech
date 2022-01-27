@@ -1,0 +1,1 @@
+INSERT INTO users(age, email, name, last_name, password) VALUES(4, 'email4@mail.ru', 'name4', 'lastname4', '$2a$08$JqJbB9If2JwvCy/t/3b6fu6UaviDofHkda0pKGU5Ok//MdVlN07u.');

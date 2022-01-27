@@ -3,7 +3,10 @@ package com.alex.test_new_tech.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.alex.test_new_tech.dao.Impl.UserDaoDataBase;
+import com.alex.test_new_tech.model.User;
 import lombok.extern.log4j.Log4j2;
+import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,67 +16,67 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 
 import javax.transaction.Transactional;
+import javax.validation.constraints.AssertTrue;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Log4j2
-//@TestPropertySource("/application-test.properties")
-//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ActiveProfiles("test2")
+@ActiveProfiles("test")
 @Import(UserDaoDataBase.class)
-@Transactional
 @Rollback(value = false)
-//@Sql(value = {"/data.sql"})
-//@Sql(value = {"/clear.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class UserDaoTest {
-
-//    @Before
-//    @Rollback(value = false)
-//    @Sql(value = {"/clear.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-//    public void initTest() throws SQLException {
-//        log.info("Инициирую");
-//    }
-
-
-    @Autowired
-    private TestEntityManager entityManager;
 
     @Autowired
     private UserDao userDao;
 
+
+    @Sql(value = "/data1.sql")
+    @Sql(value = "/clearTables.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-//    @Sql("/add_users_in_test_db2.sql")
     public void should_find_all_users(){
-//
-//        log.info("Выполняю");
-//        Role role = entityManager.find(Role.class, 1L);
-//        entityManager.persist(role);
-//
-//        User user = User.builder()
-//                .email("alex@mail.ru")
-//                .firstName("alex")
-//                .lastName("alex")
-//                .age((byte) 5)
-//                .password("alex@mail.ru")
-//                .build();
-//        user.addRole(role);
-//
-//        User user1 = User.builder()
-//                .email("igor@mail.ru")
-//                .firstName("igor")
-//                .lastName("igor")
-//                .age((byte) 51)
-//                .password("igor@mail.ru")
-//                .build();
-//        user1.addRole(role);
-//
-//        userDao.add(user);
-//        userDao.add(user1);
+        List<User> userList = userDao.getAll();
+        Assert.assertEquals(5, userList.size());;
     }
+
+
+    @Sql(value = "/should_get_true_user.sql")
+    @Sql(value = "/clearTables.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    public void should_get_true_user_by_email(){
+        User user = userDao.findByEmail("email4@mail.ru");
+        Assert.assertEquals("name4", user.getFirstName());
+    }
+
+    @Sql(value = "/should_get_true_user2.sql")
+    @Sql(value = "/clearTables.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    public void should_get_true_user_by_id(){
+        User user = userDao.getById(99L);
+        Assert.assertEquals(user.getFirstName(), "name5");
+    }
+
+    @Test
+    @Sql(value = "/clearTables.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void should_be_id_added_user_is_not_null(){
+        User user = User.builder()
+                .firstName("zero")
+                .lastName("zero")
+                .email("zero@mail.ru")
+                .password("zero")
+                .build();
+        userDao.add(user);
+        Assert.assertNotNull(user.getId());
+    }
+
+
+
+
 }
